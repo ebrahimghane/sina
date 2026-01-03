@@ -12,13 +12,12 @@ export async function fetchSuggestions(
   query: string,
   apiKey: string
 ): Promise<SearchiaResponse | null> {
-  if (!query || query.trim().length === 0) {
-    return null;
-  }
+  // Allow empty query for focus events
+  const trimmedQuery = query ? query.trim() : '';
 
   try {
     const url = new URL(API_ENDPOINT);
-    url.searchParams.set('query', query.trim());
+    url.searchParams.set('query', trimmedQuery);
 
     const response = await fetch(url.toString(), {
       method: 'GET',

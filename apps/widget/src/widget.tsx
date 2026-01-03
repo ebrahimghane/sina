@@ -26,7 +26,9 @@ export const Widget: React.FC<WidgetProps> = ({ config }) => {
   // Initialize debounced fetch function
   useEffect(() => {
     debouncedFetchRef.current = debounce(async (query: string) => {
-      if (!query || query.trim().length === 0) {
+      const trimmedQuery = query ? query.trim() : '';
+      
+      if (!trimmedQuery || trimmedQuery.length === 0) {
         setState((prev) => ({
           ...prev,
           suggestions: [],
@@ -37,27 +39,26 @@ export const Widget: React.FC<WidgetProps> = ({ config }) => {
 
       setState((prev) => ({ ...prev, isLoading: true }));
 
-      const response = await fetchSuggestions(query, config.apiKey);
+      const response = await fetchSuggestions(trimmedQuery, config.apiKey);
 
+      let suggestions: string[] = [];
+      
       if (response && response.entity && response.entity.topQuerySuggestions) {
         // topQuerySuggestions is already an array of strings
-        const suggestions = response.entity.topQuerySuggestions;
-        setState((prev) => ({
-          ...prev,
-          suggestions,
-          isLoading: false,
-          error: null,
-        }));
-      } else {
-        // If no suggestions from API, use the current query as a suggestion
-        const fallbackSuggestion = query && query.trim().length > 0 ? [query.trim()] : [];
-        setState((prev) => ({
-          ...prev,
-          suggestions: fallbackSuggestion,
-          isLoading: false,
-          error: null,
-        }));
+        suggestions = response.entity.topQuerySuggestions;
       }
+      
+      // Always include the user's query in suggestions if it's not already there
+      if (!suggestions.includes(trimmedQuery)) {
+        suggestions = [trimmedQuery, ...suggestions];
+      }
+      
+      setState((prev) => ({
+        ...prev,
+        suggestions,
+        isLoading: false,
+        error: null,
+      }));
     }, 300);
   }, [config.apiKey]);
 
@@ -75,18 +76,46 @@ export const Widget: React.FC<WidgetProps> = ({ config }) => {
 
   const handleFocus = useCallback(() => {
     setState((prev) => {
-      // Fetch suggestions when clicking on search box
       const currentQuery = prev.query || '';
-      if (debouncedFetchRef.current) {
-        // Call immediately without debounce for focus event
-        debouncedFetchRef.current(currentQuery);
-      }
+      
+      // Fetch suggestions immediately when clicking on search box (even if empty)
+      // We need to call the API directly without debounce for focus event
+      const fetchOnFocus = async () => {
+        setState((prevState) => ({ ...prevState, isLoading: true }));
+        
+        const response = await fetchSuggestions(currentQuery, config.apiKey);
+        
+        let suggestions: string[] = [];
+        
+        if (response && response.entity && response.entity.topQuerySuggestions) {
+          suggestions = response.entity.topQuerySuggestions;
+        }
+        
+        // Always include the user's query in suggestions if it's not already there
+        if (currentQuery && currentQuery.trim().length > 0) {
+          const trimmedQuery = currentQuery.trim();
+          if (!suggestions.includes(trimmedQuery)) {
+            suggestions = [trimmedQuery, ...suggestions];
+          }
+        }
+        
+        setState((prevState) => ({
+          ...prevState,
+          suggestions,
+          isLoading: false,
+          error: null,
+          isOpen: suggestions.length > 0,
+        }));
+      };
+      
+      fetchOnFocus();
+      
       return {
         ...prev,
-        isOpen: prev.suggestions.length > 0,
+        isOpen: true, // Always show suggestions container when focused
       };
     });
-  }, []);
+  }, [config.apiKey]);
 
   const handleBlur = useCallback(() => {
     // Delay to allow click events on suggestions
