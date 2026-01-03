@@ -44,6 +44,11 @@ jobs:
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
       
+      - name: Copy sina-sdk.js to playground dist
+        run: |
+          cp apps/widget/dist/sina-sdk.js apps/playground/dist/sina-sdk.js
+          cp apps/widget/dist/sina-sdk.js.map apps/playground/dist/sina-sdk.js.map 2>/dev/null || true
+      
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
