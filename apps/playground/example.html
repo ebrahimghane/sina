@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SINA Widget - Example</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 800px;
+        margin: 50px auto;
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 14px;
+      }
+      #sina-search-root {
+        margin: 30px 0;
+      }
+      .info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+        font-size: 12px;
+        color: #666;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔍 ویجت جستجوی هوشمند SINA</h1>
+      <p class="subtitle">نمونه پیاده‌سازی - فاز اول: Autocomplete</p>
+      
+      <div id="sina-search-root" 
+           data-city="tehran" 
+           data-placeholder="جستجوی پزشک، کلینیک یا تخصص...">
+      </div>
+
+      <div class="info">
+        <strong>نکات:</strong><br>
+        • با شروع تایپ، پیشنهادات از API دریافت می‌شود<br>
+        • Debounce: 300ms برای کاهش درخواست‌ها<br>
+        • با کلیک روی هر پیشنهاد، به صفحه نتایج هدایت می‌شوید<br>
+        • استایل‌ها در Shadow DOM ایزوله شده‌اند
+      </div>
+    </div>
+
+    <!-- Load React and ReactDOM from CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- SINA Widget Loader Script -->
+    <script>
+      (function(w, d, s, o, f, js, fjs) {
+        w['SinaWidget'] = o;
+        w[o] = w[o] || function() {
+          (w[o].q = w[o].q || []).push(arguments);
+        };
+        js = d.createElement(s), fjs = d.getElementsByTagName(s)[0];
+        js.id = o;
+        js.src = f;
+        js.async = 1;
+        fjs.parentNode.insertBefore(js, fjs);
+      }(window, document, 'script', 'sina', './sina-sdk.js'));
+
+      // Initialize widget
+      sina('init', {
+        apiKey: 'gwiuATzYDmeayT7eqmbHG2obv6lGpqJa',
+        containerId: 'sina-search-root'
+      });
+    </script>
+  </body>
+</html>
+

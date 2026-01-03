@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SINA Widget - Playground</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 600px;
+        margin: 50px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+      }
+      #sina-search-root {
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>ویجت جستجوی هوشمند SINA</h1>
+      <p style="text-align: center; color: #666; margin-bottom: 20px;">
+        این صفحه برای تست ویجت SINA استفاده می‌شود
+      </p>
+      <div id="sina-search-root"></div>
+    </div>
+
+    <!-- Load React and ReactDOM from CDN for UMD build -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- Load SINA Widget SDK -->
+    <script src="./sina-sdk.js"></script>
+    
+    <script>
+      // Initialize widget after script loads
+      function initSinaWidget() {
+        const config = {
+          apiKey: 'gwiuATzYDmeayT7eqmbHG2obv6lGpqJa',
+          containerId: 'sina-search-root',
+          placeholder: 'جستجو کنید...'
+        };
+
+        // Try direct init access first
+        if (window.SinaWidget && window.SinaWidget.init) {
+          window.SinaWidget.init(config);
+          return;
+        }
+
+        // Fallback to function call
+        if (window.SinaWidget && typeof window.SinaWidget === 'function') {
+          window.SinaWidget('init', config);
+          return;
+        }
+
+        // Retry if not loaded yet
+        console.log('Waiting for SINA Widget to load...');
+        setTimeout(initSinaWidget, 100);
+      }
+
+      // Start initialization
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSinaWidget);
+      } else {
+        // Script might load after DOM is ready
+        setTimeout(initSinaWidget, 100);
+      }
+    </script>
+  </body>
+</html>
+

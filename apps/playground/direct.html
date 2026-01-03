@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SINA Widget - Direct Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 40px;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+      }
+      #sina-search-root {
+        margin: 20px 0;
+        min-height: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔍 تست مستقیم ویجت SINA</h1>
+      <div id="sina-search-root"></div>
+    </div>
+
+    <!-- React and ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- SINA Widget -->
+    <script src="./sina-sdk.js"></script>
+    
+    <script>
+      // Direct initialization - wait for everything to be ready
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          console.log('=== SINA Widget Debug ===');
+          console.log('SinaWidget:', window.SinaWidget);
+          console.log('Type:', typeof window.SinaWidget);
+          console.log('Has init?', window.SinaWidget && window.SinaWidget.init);
+          
+          const config = {
+            apiKey: 'gwiuATzYDmeayT7eqmbHG2obv6lGpqJa',
+            containerId: 'sina-search-root',
+            placeholder: 'جستجو کنید...'
+          };
+
+          try {
+            if (window.SinaWidget && window.SinaWidget.init) {
+              console.log('Calling SinaWidget.init...');
+              window.SinaWidget.init(config);
+              console.log('Init called successfully');
+            } else if (window.SinaWidget && typeof window.SinaWidget === 'function') {
+              console.log('Calling SinaWidget as function...');
+              window.SinaWidget('init', config);
+              console.log('Function called successfully');
+            } else {
+              console.error('SinaWidget not available');
+              console.log('Available on window:', Object.keys(window).filter(k => k.toLowerCase().includes('sina')));
+            }
+          } catch (error) {
+            console.error('Error initializing widget:', error);
+          }
+        }, 200);
+      });
+    </script>
+  </body>
+</html>
+
